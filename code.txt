@@ -1,0 +1,263 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Collections;
+import java.util.Scanner;
+import java.util.Iterator;
+import java.util.stream.*;
+public class Main
+{
+	public static void main(String[] args) {
+	    Scanner in = new Scanner(System.in);
+	    ArrayList<Student> book = new ArrayList<>();
+	    ArrayList<Student> tabl = new ArrayList<>();
+	    int count = 0,up,low;
+	    String line1 = "";
+		File file = new File("input.txt");
+        try (BufferedReader br = new BufferedReader(new FileReader(file)))
+        {
+            String line;
+            while ((line = br.readLine()) != null) {
+                line1 = line1 + " " + line;
+                count++;
+                if (count == 8)
+                {
+                    line1 += '.';
+                    count = 0;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String text = line1.replaceAll(" group "," ");
+        String text1 = text.replaceAll(" degree","-degree");
+        String text2 = text1.replaceAll("some ","some-");
+        String text3 = text2.replaceAll("high ","high-");
+        String[] part = text3.split("[.]");
+        try{
+            for (String d : part)
+            {
+                String[] buf = d.split(" ");
+                book.add(new Student(buf[1],buf[2],buf[3],buf[4],buf[5],Integer.parseInt(buf[6]),Integer.parseInt(buf[7]),Integer.parseInt(buf[8])));
+            }   
+        }catch(Exception e1){
+            System.out.println("Неправильный формат данных в файле");
+            return;
+        }
+        System.out.println("Введите настройки для отображения участников в таблице");
+        System.out.println("Пол 1) мужской 2) женский 3) без разницы");
+        int flag1 = in.nextInt();
+        switch(flag1){
+            case (1):
+                tabl.addAll(book.stream().filter(s -> s.getGender().equals("male")).collect(Collectors.toList()));
+                break;
+            case (2):
+                tabl.addAll(book.stream().filter(s -> s.getGender().equals("female")).collect(Collectors.toList()));
+                break;
+            case (3):
+                tabl.addAll(book.stream().collect(Collectors.toList()));
+                break;
+            default:
+                System.out.println("Нет такого номера");
+                return;
+        }
+        System.out.println("Группа 1)А 2)В 3)С 4)D 5)Е 6)Любая");
+        int flag2 = in.nextInt();
+        switch (flag2){
+            case(1):
+                tabl.removeIf(s -> !s.getGroup().equals("A"));
+                break;
+            case(2):
+                tabl.removeIf(s -> !s.getGroup().equals("B"));
+                break;
+            case(3):
+                tabl.removeIf(s -> !s.getGroup().equals("C"));
+                break;
+            case(4):
+                tabl.removeIf(s -> !s.getGroup().equals("D"));
+                break;
+            case(5):
+                tabl.removeIf(s -> !s.getGroup().equals("E"));
+                break;
+            case (6):
+                break;
+            default:
+                System.out.println("Нет такого номера");
+                return;
+        }
+        System.out.println("Уровень образования 1)bachelor's degree 2)some college 3)some high school 4)high school 5)associate's degree 6)master's degree 7)Любой");
+        int flag3 = in.nextInt();
+            switch (flag3){
+                case(1):
+                    tabl.removeIf(s -> !s.getLevel().equals("bachelor's-degree"));
+                    break;
+                case(2):
+                    tabl.removeIf(s -> !s.getLevel().equals("some-college"));
+                    break;
+                case(3):
+                    tabl.removeIf(s -> !s.getLevel().equals("some-high-school"));
+                    break;
+                case(4):
+                    tabl.removeIf(s -> !s.getLevel().equals("high-school"));
+                    break;
+                case(5):
+                    tabl.removeIf(s -> !s.getLevel().equals("associate's-degree"));
+                    break;
+                case(6):
+                    tabl.removeIf(s -> !s.getLevel().equals("master's-degree"));
+                    break;
+                case (7):
+                    break;
+                default:
+                    System.out.println("Нет такого номера");
+                    return;
+            }
+        System.out.println("Тип оплаты 1)standard 2)free/reduced 3)Любой");
+        int flag4 = in.nextInt();
+        switch(flag4){
+            case (1):
+                tabl.removeIf(s -> !s.getType().equals("standard"));
+                break;
+            case (2):
+                tabl.removeIf(s -> !s.getType().equals("free/reduced"));
+                break;
+            case (3):
+                break;
+            default:
+                System.out.println("Нет такого номера");
+                return;
+        }
+        System.out.println("Закончино или нет 1)none 2)completed 3)Любой");
+        int flag5 = in.nextInt();
+        switch(flag5){
+            case (1):
+                tabl.removeIf(s -> !s.getStatus().equals("none"));
+                break;
+            case (2):
+                tabl.removeIf(s -> !s.getStatus().equals("completed"));
+                break;
+            case (3):
+                break;
+            default:
+                System.out.println("Нет такого номера");
+                return;
+        }
+        System.out.println("Какому предмету хотите установить диапозон 1)первый 2)второй 3)третий 4)никакой");
+        int flag6 = in.nextInt();
+        switch(flag6){
+            case (1):
+                System.out.println("Верхняя граница");
+                up = in.nextInt();
+                System.out.println("Нижняя граница");
+                low = in.nextInt();
+                if (Student.ErrorV(up,low)==-1)
+                {
+                    return;
+                }
+                tabl.removeIf(s -> s.getFirst()<low||s.getSecond()>up);
+                break;
+            case (2):
+                System.out.println("Верхняя граница");
+                up = in.nextInt();
+                System.out.println("Нижняя граница");
+                low = in.nextInt();
+                if (Student.ErrorV(up,low)==-1)
+                {
+                    return;
+                }
+                tabl.removeIf(s -> s.getSecond()<low||s.getSecond()>up);
+                break;
+            case (3):
+                System.out.println("Верхняя граница");
+                up = in.nextInt();
+                System.out.println("Нижняя граница");
+                low = in.nextInt();
+                if (Student.ErrorV(up,low)==-1)
+                {
+                    return;
+                }
+                tabl.removeIf(s -> s.getTrird()<low||s.getTrird()>up);
+                break;
+            case (4):
+                break;
+            default:
+                System.out.println("Нет такого номера");
+                return;
+        }
+        tabl.sort((p1,p2)->Integer.compare(Student.Value(p1),Student.Value(p2)));
+        for(Student d : tabl)
+        {
+            System.out.printf("%3s %3s %30s %15s %15s %3d %3d %3d\n",d.getGender(),d.getGroup(),d.getLevel(),d.getType(),d.getStatus(),d.getFirst(),d.getSecond(),d.getTrird());
+        }
+        System.out.printf("Средний балл первого предмета %f\n",tabl.stream().mapToDouble(s -> s.getFirst()).average().getAsDouble());
+        System.out.printf("Средний балл второго предмета %f\n",tabl.stream().mapToDouble(s -> s.getSecond()).average().getAsDouble());
+        System.out.printf("Средний балл третьего предмета %f\n",tabl.stream().mapToDouble(s -> s.getTrird()).average().getAsDouble());
+	}
+}
+
+class Student {
+    String gender;
+    String group;
+    String level;
+    String type;
+    String status;
+    int first;
+    int second;
+    int third;
+    public Student(){
+        
+    }
+    public Student(String gender,String group,String level,String type,String status,int first,int second,int third){
+        this.gender = gender;
+        this.group = group;
+        this.level = level;
+        this.type = type;
+        this.status = status;
+        this.first = first;
+        this.second = second;
+        this.third = third;
+    }
+    public String getGender(){
+        return gender;
+    }
+    public String getGroup(){
+        return group;
+    }
+    public String getLevel(){
+        return level;
+    }
+    public String getType(){
+        return type;
+    }
+    public String getStatus(){
+        return status;
+    }
+    public int getFirst(){
+        return first;
+    }
+    public int getSecond(){
+        return second;
+    }
+    public int getTrird(){
+        return third;
+    }
+    public static int Value(Student s){
+        return (s.getTrird()+s.getSecond()+s.getFirst());
+    }
+    public static Double Mid_Value(Student s){
+        return (((double)s.getTrird()+(double)s.getSecond()+(double)s.getFirst())/3);
+    }
+    public static int ErrorV(int v1, int v2){
+        if (v2<0||v1>100)
+        {
+            System.out.println("Неправильные значения");
+            return -1;
+        }
+        else
+            return 1;
+    }
+}
